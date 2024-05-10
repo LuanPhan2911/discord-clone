@@ -5,7 +5,9 @@ interface AuthLayoutProps {
 }
 
 const AuthLayout: FunctionComponent<AuthLayoutProps> = ({ children }) => {
-  return <div className="bg-red-100 h-full">{children}</div>;
+  return (
+    <div className="flex items-center justify-center h-full">{children}</div>
+  );
 };
 
 export default AuthLayout;
