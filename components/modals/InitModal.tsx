@@ -11,7 +11,6 @@ import {
   DialogHeader,
   DialogFooter,
 } from "../ui/dialog";
-import { DialogTrigger } from "@radix-ui/react-dialog";
 import {
   Form,
   FormControl,
@@ -24,7 +23,8 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import FileUpload from "../file-upload";
-
+import axios from "axios";
+import { useRouter } from "next/navigation";
 const formSchema = z.object({
   name: z.string().min(1, {
     message: "Server name is required",
@@ -35,6 +35,7 @@ const formSchema = z.object({
 });
 const InitModal = () => {
   const [isMounted, setMounted] = useState(false);
+  const router = useRouter();
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -46,7 +47,12 @@ const InitModal = () => {
     },
   });
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+    try {
+      await axios.post("/api/servers", values);
+      form.reset();
+      router.refresh();
+      window.location.reload();
+    } catch (error) {}
   };
   const isLoading = form.formState.isSubmitting;
   if (!isMounted) {
