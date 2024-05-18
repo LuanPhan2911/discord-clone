@@ -24,7 +24,7 @@ const NavigationItem: FunctionComponent<NavigationItemProps> = ({
         onClick={() => {
           router.push(`/servers/${id}`);
         }}
-        className="group relative flex items-center"
+        className="group relative flex items-center pb-3"
       >
         <div
           className={cn(

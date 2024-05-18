@@ -1,4 +1,4 @@
-import InitModal from "@/components/modals/InitModal";
+import InitModal from "@/components/modals/init-modal";
 import { db } from "@/lib/db";
 import { initProfile } from "@/lib/init-profile";
 import { redirect } from "next/navigation";
