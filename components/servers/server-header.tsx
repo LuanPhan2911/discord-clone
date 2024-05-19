@@ -54,12 +54,18 @@ const ServerHeader = ({ role, server }: ServerHeaderProps) => {
           </DropdownMenuItem>
         )}
         {isAdmin && (
-          <DropdownMenuItem className="text-indigo-600 dark:text-indigo-400 px-3 py-2 text-sm cursor-pointer flex items-center">
+          <DropdownMenuItem
+            onClick={() => onOpen("editServer", { server })}
+            className="text-indigo-600 dark:text-indigo-400 px-3 py-2 text-sm cursor-pointer flex items-center"
+          >
             Server Setting <Settings className="h-4 w-4 ml-auto"></Settings>
           </DropdownMenuItem>
         )}
         {isAdmin && (
-          <DropdownMenuItem className="text-indigo-600 dark:text-indigo-400 px-3 py-2 text-sm cursor-pointer flex items-center">
+          <DropdownMenuItem
+            onClick={() => onOpen("manageMembers", { server })}
+            className="text-indigo-600 dark:text-indigo-400 px-3 py-2 text-sm cursor-pointer flex items-center"
+          >
             Manage Members <Users className="h-4 w-4 ml-auto"></Users>
           </DropdownMenuItem>
         )}
