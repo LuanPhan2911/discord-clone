@@ -23,15 +23,25 @@ export async function PATCH(
     }
 
     const server = await db.server.update({
-      data: {
-        inviteCode: uuidv4(),
-      },
       where: {
         id: serverId,
-        profileId: profile.id,
+        profileId: {
+          not: profile.id,
+        },
+        members: {
+          some: {
+            profileId: profile.id,
+          },
+        },
+      },
+      data: {
+        members: {
+          deleteMany: {
+            profileId: profile.id,
+          },
+        },
       },
     });
-
     return NextResponse.json(server);
   } catch (error) {
     return new NextResponse("Internal Error", { status: 500 });
