@@ -21,8 +21,12 @@ const ServerChannel = ({ channel, server, role }: ServerChannelProps) => {
   const router = useRouter();
   const Icon = iconMap[channel.type];
   const { onOpen } = useModal();
+  const onClick = () => {
+    router.push(`/servers/${server.id}/channels/${channel.id}`);
+  };
   return (
     <button
+      onClick={onClick}
       className={cn(
         `group px-2 py-2 rounded-md flex items-center 
         gap-x-2 w-full hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition mb-1`,

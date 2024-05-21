@@ -24,8 +24,13 @@ export const PATCH = async (
     if (!channelId || !serverId) {
       return new NextResponse("Missing Data", { status: 400 });
     }
-    const { name, type } = await req.json();
 
+    const { name, type } = await req.json();
+    if (name === "general") {
+      return new NextResponse("Invalid Channel Name is general", {
+        status: 400,
+      });
+    }
     const server = await db.server.update({
       where: {
         id: serverId,
