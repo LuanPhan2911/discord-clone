@@ -31,6 +31,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   name: z
@@ -46,17 +47,20 @@ const formSchema = z.object({
   }),
 });
 const CreateChannelModal = () => {
-  const { isOpen, type, onClose } = useModal();
+  const { isOpen, type, data, onClose } = useModal();
   const isOpenModal = type === "createChannel" && isOpen;
   const params = useParams();
   const router = useRouter();
+  const { channelType } = data;
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      type: ChannelType.TEXT,
+      type: channelType || ChannelType.TEXT,
     },
   });
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const url = qs.stringifyUrl({
@@ -72,6 +76,9 @@ const CreateChannelModal = () => {
     } catch (error) {}
   };
   const isLoading = form.formState.isSubmitting;
+  useEffect(() => {
+    form.setValue("type", channelType || ChannelType.TEXT);
+  }, [channelType, form]);
   const handleClose = () => {
     form.reset();
     onClose();
