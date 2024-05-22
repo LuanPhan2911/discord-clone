@@ -11,22 +11,12 @@ import { Separator } from "../ui/separator";
 import ServerSection from "./server-section";
 import ServerChannel from "./server-channel";
 import ServerMember from "./server-member";
+import { iconMap, roleMap } from "@/enums";
 
 interface ServerSideBarProps {
   serverId: string;
 }
-const iconMap = {
-  [ChannelType.TEXT]: <Hash className="w-4 h-4 mr-2" />,
-  [ChannelType.AUDIO]: <Mic className="w-4 h-4 mr-2" />,
-  [ChannelType.VIDEO]: <Video className="w-4 h-4 mr-2" />,
-};
-const roleMap = {
-  [MemberRole.GUEST]: null,
-  [MemberRole.MODERATOR]: (
-    <ShieldCheck className="w-4 h-4 mr-2 text-indigo-500" />
-  ),
-  [MemberRole.ADMIN]: <ShieldAlert className="w-4 h-4 mr-2 text-rose-500" />,
-};
+
 const ServerSidebar = async ({ serverId }: ServerSideBarProps) => {
   const profile = await currentProfile();
   if (!profile) {

@@ -3,11 +3,14 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem } from "../ui/form";
-import { Plus, Smile } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Input } from "../ui/input";
 import qs from "query-string";
 import axios from "axios";
 import { useModal } from "@/hooks/use-modal-store";
+import EmojiPicker from "../emoji-picker";
+import { useRouter } from "next/navigation";
+
 interface ChatInputProps {
   apiUrl: string;
   query: Record<string, any>;
@@ -18,6 +21,7 @@ const formSchema = z.object({
   content: z.string().min(1),
 });
 const ChatInput = ({ apiUrl, name, query, type }: ChatInputProps) => {
+  const router = useRouter();
   const { onOpen } = useModal();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -33,8 +37,11 @@ const ChatInput = ({ apiUrl, name, query, type }: ChatInputProps) => {
         query,
       });
       const res = await axios.post(url, values);
+      form.reset();
+      router.refresh();
     } catch (error) {}
   };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -61,7 +68,11 @@ const ChatInput = ({ apiUrl, name, query, type }: ChatInputProps) => {
                       <Plus className="text-white dark:text-[#313338]" />
                     </button>
                     <div className="absolute top-7 right-8">
-                      <Smile className="dark:text-zinc-200 text-zinc-400 cursor-pointer" />
+                      <EmojiPicker
+                        onChange={(emoji) =>
+                          field.onChange(`${field.value} ${emoji}`)
+                        }
+                      />
                     </div>
                     <Input
                       disabled={isLoading}

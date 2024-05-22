@@ -38,12 +38,7 @@ import {
 import { Separator } from "../ui/separator";
 import { MemberRole } from "@prisma/client";
 import { useRouter } from "next/navigation";
-
-const roleIconMap = {
-  GUEST: null,
-  MODERATOR: <ShieldCheck className="h-4 w-4 ml-2 text-indigo-500" />,
-  ADMIN: <ShieldAlert className="h-4 w-4 text-rose-500" />,
-};
+import { roleMap } from "@/enums";
 
 const ManageMembersModal = () => {
   const { isOpen, type, data, onClose, onOpen } = useModal();
@@ -106,7 +101,7 @@ const ManageMembersModal = () => {
                 <div className="flex flex-col gap-y-1 ">
                   <div className="text-xs font-semibold flex items-center">
                     {member.profile.name}
-                    {roleIconMap[member.role]}
+                    {roleMap[member.role]}
                   </div>
                   <p className="text-xs text-zinc-500">
                     {member.profile.email}
