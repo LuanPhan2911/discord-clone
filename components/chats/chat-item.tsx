@@ -6,8 +6,18 @@ import ActionTooltip from "../action-tooltip";
 import { roleMap } from "@/enums";
 import Image from "next/image";
 import { Edit, FileIcon, Trash, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormField, FormItem } from "../ui/form";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import queryString from "query-string";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useModal } from "@/hooks/use-modal-store";
 
 interface ChatItemProps {
   id: string;
@@ -23,6 +33,9 @@ interface ChatItemProps {
   socketUrl: string;
   socketQuery: Record<string, any>;
 }
+const formSchema = z.object({
+  content: z.string().min(1),
+});
 const ChatItem = ({
   content,
   currentMember,
@@ -32,6 +45,8 @@ const ChatItem = ({
   isUpdated,
   member,
   timestamp,
+  socketQuery,
+  socketUrl,
 }: ChatItemProps) => {
   const fileType = fileUrl?.split(".").pop();
   const [isDeleting, setDeleting] = useState(false);
@@ -44,6 +59,46 @@ const ChatItem = ({
   const isPdf = fileType === "pdf" && fileUrl;
   const isImage = !isPdf && fileUrl;
 
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      content: "",
+    },
+  });
+  const router = useRouter();
+  const { onOpen } = useModal();
+  useEffect(() => {
+    form.reset({
+      content,
+    });
+  }, [content, form]);
+  useEffect(() => {
+    const cancel = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setEditing(false);
+        form.reset({
+          content,
+        });
+      }
+    };
+
+    document.addEventListener("keydown", cancel);
+    return () => {
+      document.removeEventListener("keydown", cancel);
+    };
+  }, [form, content]);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const url = queryString.stringifyUrl({
+        url: `${socketUrl}/${id}`,
+        query: socketQuery,
+      });
+      const res = await axios.patch(url, values);
+      setEditing(false);
+      form.reset();
+    } catch (error) {}
+  };
+  const isLoading = form.formState.isSubmitting;
   return (
     <div
       className="relative group flex items-center 
@@ -106,6 +161,43 @@ const ChatItem = ({
               )}
             </p>
           )}
+          {!fileUrl && isEditing && (
+            <Form {...form}>
+              <form
+                className="flex items-center gap-x-2 pt-2"
+                onSubmit={form.handleSubmit(onSubmit)}
+              >
+                <FormField
+                  control={form.control}
+                  name="content"
+                  render={({ field }) => {
+                    return (
+                      <FormItem className="flex-1">
+                        <FormControl>
+                          <div className="relative w-full">
+                            <Input
+                              disabled={isLoading}
+                              className="p-2 bg-zinc-200/90 dark:bg-zinc-700/75 
+                            border-none focus-visible:ring-0 
+                            focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-400"
+                              placeholder="Edit Message"
+                              {...field}
+                            />
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    );
+                  }}
+                ></FormField>
+                <Button disabled={isLoading} variant={"primary"} size={"sm"}>
+                  Save
+                </Button>
+              </form>
+              <span className="text-[10px] mt-1 text-zinc-400">
+                Press escape to cancel, enter to save
+              </span>
+            </Form>
+          )}
         </div>
         {canDeleteMessage && (
           <div
@@ -118,6 +210,7 @@ const ChatItem = ({
             {canEditMessage && (
               <ActionTooltip label="Edit">
                 <Edit
+                  onClick={() => setEditing(true)}
                   className="w-5 h-5 cursor-auto ml-auto 
                 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
                 />
@@ -125,6 +218,13 @@ const ChatItem = ({
             )}
             <ActionTooltip label="Delete">
               <Trash
+                onClick={() =>
+                  onOpen("deleteMessage", {
+                    socketQuery,
+                    socketUrl,
+                    messageId: id,
+                  })
+                }
                 className="w-5 h-5 cursor-auto ml-auto 
                 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
               />

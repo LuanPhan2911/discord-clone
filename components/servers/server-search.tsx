@@ -9,7 +9,7 @@ import {
   CommandList,
 } from "../ui/command";
 import { useEffect, useState } from "react";
-import { redirect, useParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 interface ServerSearchProps {
   data: {
@@ -49,7 +49,7 @@ const ServerSearch = ({ data }: ServerSearchProps) => {
   }) => {
     setOpen(false);
     if (type === "channel") {
-      return router.push(`/servers/${params.serverId}/channels/${id}`);
+      return router.push(`/servers/${params?.serverId}/channels/${id}`);
     }
     if (type === "member") {
       return router.push(`/servers/${params?.serverId}/conversations/${id}`);
