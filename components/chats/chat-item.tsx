@@ -16,7 +16,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import queryString from "query-string";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
 
 interface ChatItemProps {
@@ -49,7 +49,6 @@ const ChatItem = ({
   socketUrl,
 }: ChatItemProps) => {
   const fileType = fileUrl?.split(".").pop();
-  const [isDeleting, setDeleting] = useState(false);
   const [isEditing, setEditing] = useState(false);
   const isAdmin = member.role === MemberRole.ADMIN;
   const isModerator = member.role === MemberRole.MODERATOR;
@@ -66,6 +65,7 @@ const ChatItem = ({
     },
   });
   const router = useRouter();
+  const params = useParams();
   const { onOpen } = useModal();
   useEffect(() => {
     form.reset({
@@ -98,6 +98,12 @@ const ChatItem = ({
       form.reset();
     } catch (error) {}
   };
+  const onClickMember = () => {
+    if (member.id === currentMember.id) {
+      return;
+    }
+    router.push(`/servers/${params?.serverId}/conversations/${member.id}`);
+  };
   const isLoading = form.formState.isSubmitting;
   return (
     <div
@@ -105,7 +111,10 @@ const ChatItem = ({
   hover:bg-black/5 p-4 transition w-full"
     >
       <div className="group flex gap-x-2 items-start w-full">
-        <div className="cursor-pointer hover:drop-shadow-md transition">
+        <div
+          onClick={onClickMember}
+          className="cursor-pointer hover:drop-shadow-md transition"
+        >
           <UserAvatar src={member.profile.imageUrl} />
         </div>
         <div className="flex flex-col w-full">

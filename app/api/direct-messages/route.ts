@@ -1,6 +1,6 @@
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
-import { Message } from "@prisma/client";
+import { RedirectMessage } from "@prisma/client";
 import { NextResponse } from "next/server";
 const LIMIT = 10;
 export const GET = async (req: Request) => {
@@ -10,22 +10,22 @@ export const GET = async (req: Request) => {
       return new NextResponse("Unauthorized", { status: 401 });
     }
     const { searchParams } = new URL(req.url);
-    const channelId = searchParams.get("channelId");
+    const conversationId = searchParams.get("conversationId");
     const cursor = searchParams.get("cursor");
-    if (!channelId) {
+    if (!conversationId) {
       return new NextResponse("Channel Id missing", { status: 400 });
     }
 
-    let messages: Message[] = [];
+    let messages: RedirectMessage[] = [];
     if (cursor) {
-      messages = await db.message.findMany({
+      messages = await db.redirectMessage.findMany({
         take: LIMIT,
         skip: 1,
         cursor: {
           id: cursor,
         },
         where: {
-          channelId,
+          conversationId,
         },
         include: {
           member: {
@@ -39,10 +39,10 @@ export const GET = async (req: Request) => {
         },
       });
     } else {
-      messages = await db.message.findMany({
+      messages = await db.redirectMessage.findMany({
         take: LIMIT,
         where: {
-          channelId,
+          conversationId,
         },
         include: {
           member: {
