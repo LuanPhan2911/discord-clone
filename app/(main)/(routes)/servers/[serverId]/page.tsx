@@ -20,7 +20,7 @@ const ServerIdPage: FunctionComponent<ServerIdPageProps> = async ({
   const server = await db.server.findUnique({
     where: {
       id: params?.serverId,
-      channels: {
+      members: {
         some: {
           profileId: profile.id,
         },
@@ -37,6 +37,7 @@ const ServerIdPage: FunctionComponent<ServerIdPageProps> = async ({
       },
     },
   });
+
   const channel = server?.channels[0];
   if (!channel) {
     return null;
