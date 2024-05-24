@@ -45,6 +45,11 @@ const MemberIdPage = async ({ params, searchParams }: MemberIdPageProps) => {
   const { memberOne, memberTwo } = conversation;
   const otherMember =
     memberOne.profileId === profile.id ? memberTwo : memberOne;
+  const onLeave = () => {
+    return redirect(
+      `/servers/${params?.serverId}/conversations/${currentMember?.id}`
+    );
+  };
   return (
     <div className="bg-white dark:bg-[#313338] flex flex-col h-full">
       <ChatHeader
@@ -80,7 +85,12 @@ const MemberIdPage = async ({ params, searchParams }: MemberIdPageProps) => {
         </>
       )}
       {searchParams?.video && (
-        <MediaRoom chatId={conversation.id} video={true} audio={true} />
+        <MediaRoom
+          chatId={conversation.id}
+          video={true}
+          audio={true}
+          onLeave={onLeave}
+        />
       )}
     </div>
   );

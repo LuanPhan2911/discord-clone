@@ -14,8 +14,14 @@ interface MediaRoomProps {
   chatId: string;
   video: boolean;
   audio: boolean;
+  onLeave: () => void;
 }
-export const MediaRoom = ({ audio, chatId, video }: MediaRoomProps) => {
+export const MediaRoom = ({
+  audio,
+  chatId,
+  video,
+  onLeave,
+}: MediaRoomProps) => {
   const { user } = useUser();
   const [token, setToken] = useState("");
 
@@ -32,6 +38,7 @@ export const MediaRoom = ({ audio, chatId, video }: MediaRoomProps) => {
       } catch (error) {}
     })();
   }, [user, token, chatId]);
+
   if (!token) {
     return (
       <div className="flex flex-col flex-1 justify-center items-center">
@@ -48,6 +55,7 @@ export const MediaRoom = ({ audio, chatId, video }: MediaRoomProps) => {
       audio={audio}
       video={video}
       data-lk-theme="default"
+      onDisconnected={onLeave}
     >
       <VideoConference />
     </LiveKitRoom>

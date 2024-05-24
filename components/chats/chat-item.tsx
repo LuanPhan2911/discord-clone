@@ -225,19 +225,21 @@ const ChatItem = ({
                 />
               </ActionTooltip>
             )}
-            <ActionTooltip label="Delete">
-              <Trash
-                onClick={() =>
-                  onOpen("deleteMessage", {
-                    socketQuery,
-                    socketUrl,
-                    messageId: id,
-                  })
-                }
-                className="w-5 h-5 cursor-auto ml-auto 
+            {canDeleteMessage && (
+              <ActionTooltip label="Delete">
+                <Trash
+                  onClick={() =>
+                    onOpen("deleteMessage", {
+                      socketQuery,
+                      socketUrl,
+                      messageId: id,
+                    })
+                  }
+                  className="w-5 h-5 cursor-auto ml-auto 
                 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
-              />
-            </ActionTooltip>
+                />
+              </ActionTooltip>
+            )}
           </div>
         )}
       </div>

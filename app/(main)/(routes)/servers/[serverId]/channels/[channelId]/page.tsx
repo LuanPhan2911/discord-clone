@@ -33,6 +33,9 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
   if (!channel || !member) {
     return redirect("/");
   }
+  const onLeave = () => {
+    return redirect(`/servers/${params?.serverId}`);
+  };
   return (
     <div className="bg-white dark:bg-[#313338] flex flex-col h-full">
       <ChatHeader
@@ -69,10 +72,20 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
         </>
       )}
       {channel.type === ChannelType.AUDIO && (
-        <MediaRoom chatId={channel.id} video={false} audio={true} />
+        <MediaRoom
+          chatId={channel.id}
+          video={false}
+          audio={true}
+          onLeave={onLeave}
+        />
       )}
       {channel.type === ChannelType.VIDEO && (
-        <MediaRoom chatId={channel.id} video={true} audio={false} />
+        <MediaRoom
+          chatId={channel.id}
+          video={true}
+          audio={false}
+          onLeave={onLeave}
+        />
       )}
     </div>
   );
